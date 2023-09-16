@@ -1,15 +1,81 @@
-import React from "react";
-
+import React, { useState } from "react";
 
 const Form = () => {
-  //Aqui deberan implementar el form completo con sus validaciones
+
+  // Aquí se definen las expresiones regulares para la validación de inputs
+  const EMAIL_REGEX = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+  const NAME_REGEX = /^[a-zA-Z]+$/;
+
+  // Aquí se definen los estados iniciales del formulario
+  const [formData, setFormData] = useState({
+    name: "",
+    email: ""
+  });
+
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  // Función que se llama cada vez que cambia el valor de los inputs del formulario
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  // Función que se llama cuando se envía el formulario
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    
+    // Se valida la información ingresada en los inputs
+    if (
+      formData.name.indexOf(" ") !== 0 &&
+      NAME_REGEX.test(formData.name) &&
+      formData.name.length >= 3  &&
+      EMAIL_REGEX.test(formData.email)
+    ) {
+      setSuccessMessage(`¡Gracias ${formData.name}! Te contactaremos por mail`);
+      setErrorMessage("");
+      setFormData({ name: "", email: "" });
+    } else {
+      setErrorMessage("Por favor verifique su información");
+      setSuccessMessage("");
+    }
+  };
 
   return (
-    <div>
-      <form>
+    <div className="contenedor-formulario">
+      <form className="formulario" onSubmit={handleSubmit}>
+        <div className="input">
+          <label htmlFor="name">Ingrese su nombre</label>
+          <input 
+            type="text" 
+            id="name" 
+            name="name" 
+            placeholder="Nombre" 
+            value={formData.name} 
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className="input">
+          <label htmlFor="email">Por favor, ingrese su mail </label>
+          <input 
+            type="text" 
+            id="email" 
+            name="email" 
+            placeholder="email@email.com"
+            value={formData.email} 
+            onChange={handleInputChange}
+          />
+        </div>
+        
+        <button class="favButton contactBtn" type="submit">Enviar</button>
+
       </form>
+      {errorMessage && <h3>{errorMessage}</h3>}
+      {successMessage && <h3>{successMessage}</h3>}
     </div>
   );
 };
 
 export default Form;
+
